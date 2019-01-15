@@ -2,9 +2,12 @@
     "name": "test",
     "version": "1.0.0",
     "scripts": {
-        "start": "webpack-dev-server"
+        "start": "webpack-dev-server",
+        "build": "webpack"
     },
     "dependencies": {
+        "@types/benchmark": "^1.0.31",
+        "@types/node": "^10.12.18",
         "autobind-decorator": "^2.4.0",
         "babel-cli": "^6.26.0",
         "babel-eslint": "^10.0.1",
@@ -15,6 +18,7 @@
         "babel-preset-env": "^1.7.0",
         "babel-preset-react": "^6.24.1",
         "babel-preset-stage-0": "^6.24.1",
+        "benchmark": "^2.1.4",
         "ts-loader": "^5.3.3",
         "typescript": "^3.2.2",
         "webpack": "^4.28.4",

@@ -1,7 +1,5 @@
 import {A, B, C, D, E} from "./src/classes";
 
-var n = 1000000;
-
 function format(text, strLen = 20) {
     while (text.length < strLen) {
         text += ' ';
@@ -15,31 +13,53 @@ function insertInBody(text) {
     document.body.appendChild(tag);
 }
 
-function measure(instance) {
-	var i = n;
+(new Benchmark.Suite)
+    .on('start', () =>  insertInBody('create class:'))
+    .on('cycle', event => {
+        event.target.name = format(event.target.name);
+        insertInBody(String(event.target));
+    })
+    .on('complete', function () {
+        insertInBody('Fastest is ' + this.filter('fastest').map('name').map(name => name.replace(/ /g, '')))
+    })
 
-	var start = performance.now();
-	while (--i) instance.lol();
-	var end = performance.now();
+    .add('autobind class', () => new A())
+    .add('simple class', () => new B())
+    .add('arrow func', () => new C())
+    .add('autobind method', () => new D())
+    .add('bind in constructor', () => new E())
+    .add('RegExp#test', () => /o/.test('Hello World!'))
+    .add('String#indexOf', () => 'Hello World!'.indexOf('o') > -1)
 
-	return end - start;
-}
+    .run({ 'async': false });
 
-function measureWithCreateClass(className) {
-    var i = n;
+var a = new A();
+var b = new B();
+var c = new C();
+var d = new D();
+var e = new E();
 
-    var start = performance.now();
-    while (--i) {
-        (new className()).lol();
-    }
-    var end = performance.now();
+(new Benchmark.Suite)
+    .on('start', () =>  insertInBody('call function:'))
+    .on('cycle', event => {
+        event.target.name = format(event.target.name);
+        insertInBody(String(event.target));
+    })
+    .on('complete', function () {
+        insertInBody('Fastest is ' + this.filter('fastest').map('name').map(name => name.replace(/ /g, '')))
+    })
 
-    return end - start;
-}
+    .add('autobind class', a.lol)
+    .add('simple class', b.lol)
+    .add('arrow func', c.lol)
+    .add('autobind method', d.lol)
+    .add('bind in constructor', e.lol)
+    .add('RegExp#test', () => /o/.test('Hello World!'))
+    .add('String#indexOf', () => 'Hello World!'.indexOf('o') > -1)
 
-insertInBody(`n = ${n}`);
+    .run({ 'async': false });
+/*
 
-insertInBody('without create: ');
 insertInBody(`${format('autobind class')}: ${measure(new A())}`);
 insertInBody(`${format('simple class')}: ${measure(new B())}`);
 insertInBody(`${format('arrow func')}: ${measure(new C())}`);
@@ -52,3 +72,4 @@ insertInBody(`${format('simple class')}: ${measureWithCreateClass(B)}`);
 insertInBody(`${format('arrow func')}: ${measureWithCreateClass(C)}`);
 insertInBody(`${format('autobind method')}: ${measureWithCreateClass(D)}`);
 insertInBody(`${format('bind in constructor')}: ${measureWithCreateClass(E)}`);
+*/

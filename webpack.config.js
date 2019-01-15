@@ -1,10 +1,27 @@
 const path = require('path');
 let NODE_MODULES_DIR = /node_modules/;
 let webpackConfig = {
-	mode: 'production',
-	entry: './index.ts',
+	mode: 'development',
+	entry: {
+		index: [
+			'./index.ts'
+		],
+		lodash: [
+			path.join(__dirname, 'src', 'libs', 'lodash.js'),
+		],
+		platform: [
+			path.join(__dirname, 'src', 'libs', 'platform.js'),
+		],
+		benchmark: [
+			path.join(__dirname, 'src', 'libs', 'benchmark.js'),
+		]
+	},
 	output: {
-		filename: 'index.js'
+		filename: '[name].js'
+	},
+	devServer: {
+		clientLogLevel: 'none',
+		disableHostCheck: true
 	},
 	module: {
 		rules: [
@@ -18,10 +35,8 @@ let webpackConfig = {
 				loader: 'babel-loader',
 				include: [
 					path.resolve(__dirname, 'src'),
-				],
-				options: {
-					babelrc: true,
-				},
+					path.resolve(__dirname, 'src', 'libs'),
+				]
 			},
 		]
 	},
