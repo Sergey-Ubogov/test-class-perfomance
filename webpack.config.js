@@ -11,9 +11,6 @@ let webpackConfig = {
 		],
 		platform: [
 			path.join(__dirname, 'src', 'libs', 'platform.js'),
-		],
-		benchmark: [
-			path.join(__dirname, 'src', 'libs', 'benchmark.js'),
 		]
 	},
 	output: {
