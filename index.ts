@@ -1,4 +1,50 @@
-import {A, B, C, D, E} from "./src/classes";
+import autobind from "autobind-decorator";
+
+@autobind
+class A {
+    a;
+    lol() {
+        for (var i = 0; i < 100; i++) {
+            this.a = i;
+        }
+    }
+}
+class B {
+    a;
+    lol() {
+        for (var i = 0; i < 100; i++) {
+            this.a = i;
+        }
+    }
+}
+class C {
+    a;
+    lol = () => {
+        for (var i = 0; i < 100; i++) {
+            this.a = i;
+        }
+    }
+}
+class D {
+    a;
+    @autobind
+    lol() {
+        for (var i = 0; i < 100; i++) {
+            this.a = i;
+        }
+    }
+}
+class E {
+    a;
+    constructor() {
+        this.lol = this.lol.bind(this);
+    }
+    lol() {
+        for (var i = 0; i < 100; i++) {
+            this.a = i;
+        }
+    }
+}
 
 function format(text, strLen = 20) {
     while (text.length < strLen) {
@@ -13,63 +59,62 @@ function insertInBody(text) {
     document.body.appendChild(tag);
 }
 
-(new Benchmark.Suite)
-    .on('start', () =>  insertInBody('create class:'))
-    .on('cycle', event => {
-        event.target.name = format(event.target.name);
-        insertInBody(String(event.target));
-    })
-    .on('complete', function () {
-        insertInBody('Fastest is ' + this.filter('fastest').map('name').map(name => name.replace(/ /g, '')))
-    })
+async function test1() {
+    insertInBody('create class:');
+    await new Promise((resolve) => (new Benchmark.Suite)
+        .on('cycle', event => {
+            event.target.name = format(event.target.name);
+            insertInBody(String(event.target));
+        })
+        .on('complete', function () {
+            insertInBody('Fastest is ' + this.filter('fastest').map('name').map(name => name.replace(/ /g, '')));
+            resolve();
+        })
 
-    .add('autobind class', () => new A())
-    .add('simple class', () => new B())
-    .add('arrow func', () => new C())
-    .add('autobind method', () => new D())
-    .add('bind in constructor', () => new E())
-    .add('RegExp#test', () => /o/.test('Hello World!'))
-    .add('String#indexOf', () => 'Hello World!'.indexOf('o') > -1)
+        .add('autobind class', () => new A())
+        .add('simple class', () => new B())
+        .add('arrow func', () => new C())
+        .add('autobind method', () => new D())
+        .add('bind in constructor', () => new E())
+        .add('RegExp#test', () => /o/.test('Hello World!'))
+        .add('String#indexOf', () => 'Hello World!'.indexOf('o') > -1)
 
-    .run({ 'async': false });
+        .run({ 'async': true })
+    )
+}
 
-var a = new A();
-var b = new B();
-var c = new C();
-var d = new D();
-var e = new E();
+async function test2() {
+    var a = new A();
+    var b = new B();
+    var c = new C();
+    var d = new D();
+    var e = new E();
 
-(new Benchmark.Suite)
-    .on('start', () =>  insertInBody('call function:'))
-    .on('cycle', event => {
-        event.target.name = format(event.target.name);
-        insertInBody(String(event.target));
-    })
-    .on('complete', function () {
-        insertInBody('Fastest is ' + this.filter('fastest').map('name').map(name => name.replace(/ /g, '')))
-    })
+    insertInBody('call function:');
 
-    .add('autobind class', a.lol)
-    .add('simple class', b.lol)
-    .add('arrow func', c.lol)
-    .add('autobind method', d.lol)
-    .add('bind in constructor', e.lol)
-    .add('RegExp#test', () => /o/.test('Hello World!'))
-    .add('String#indexOf', () => 'Hello World!'.indexOf('o') > -1)
+    await new Promise(resolve => (new Benchmark.Suite)
+        .on('cycle', event => {
+            event.target.name = format(event.target.name);
+            insertInBody(String(event.target));
+        })
+        .on('complete', function () {
+            insertInBody('Fastest is ' + this.filter('fastest').map('name').map(name => name.replace(/ /g, '')));
+            resolve();
+        })
 
-    .run({ 'async': false });
-/*
+        .add('autobind class', a.lol)
+        .add('simple class', b.lol)
+        .add('arrow func', c.lol)
+        .add('autobind method', d.lol)
+        .add('bind in constructor', e.lol)
+        .add('RegExp#test', () => /o/.test('Hello World!'))
+        .add('String#indexOf', () => 'Hello World!'.indexOf('o') > -1)
 
-insertInBody(`${format('autobind class')}: ${measure(new A())}`);
-insertInBody(`${format('simple class')}: ${measure(new B())}`);
-insertInBody(`${format('arrow func')}: ${measure(new C())}`);
-insertInBody(`${format('autobind method')}: ${measure(new D())}`);
-insertInBody(`${format('bind in constructor')}: ${measure(new E())}`);
+        .run({ 'async': true })
+    )
+}
 
-insertInBody('with create: ');
-insertInBody(`${format('autobind class')}: ${measureWithCreateClass(A)}`);
-insertInBody(`${format('simple class')}: ${measureWithCreateClass(B)}`);
-insertInBody(`${format('arrow func')}: ${measureWithCreateClass(C)}`);
-insertInBody(`${format('autobind method')}: ${measureWithCreateClass(D)}`);
-insertInBody(`${format('bind in constructor')}: ${measureWithCreateClass(E)}`);
-*/
+(async function() {
+    await test1();
+    await test2();
+})();
