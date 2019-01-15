@@ -1,48 +1,56 @@
 import autobind from "autobind-decorator";
+import {Component} from 'react';
 
 @autobind
-class A {
-    a;
+class A extends Component {
     lol() {
-        for (var i = 0; i < 100; i++) {
-            this.a = i;
+        var sum = 0;
+        for (var i = 1; i <= 100; i++) {
+            sum += i;
         }
+        return sum;
     }
 }
-class B {
-    a;
+class B extends Component {
     lol() {
-        for (var i = 0; i < 100; i++) {
-            this.a = i;
+        var sum = 0;
+        for (var i = 1; i <= 100; i++) {
+            sum += i;
         }
+        return sum;
     }
 }
-class C {
-    a;
+class C extends Component {
     lol = () => {
-        for (var i = 0; i < 100; i++) {
-            this.a = i;
+        var sum = 0;
+        for (var i = 1; i <= 100; i++) {
+            sum += i;
         }
+        return sum;
     }
 }
-class D {
-    a;
+class D extends Component {
     @autobind
     lol() {
-        for (var i = 0; i < 100; i++) {
-            this.a = i;
+        var sum = 0;
+        for (var i = 1; i <= 100; i++) {
+            sum += i;
         }
+        return sum;
     }
 }
-class E {
-    a;
+class E extends Component {
     constructor() {
+        super();
+
         this.lol = this.lol.bind(this);
     }
     lol() {
-        for (var i = 0; i < 100; i++) {
-            this.a = i;
+        var sum = 0;
+        for (var i = 1; i <= 100; i++) {
+            sum += i;
         }
+        return sum;
     }
 }
 
@@ -84,12 +92,6 @@ async function test1() {
 }
 
 async function test2() {
-    var a = new A();
-    var b = new B();
-    var c = new C();
-    var d = new D();
-    var e = new E();
-
     insertInBody('call function:');
 
     await new Promise(resolve => (new Benchmark.Suite)
@@ -102,11 +104,126 @@ async function test2() {
             resolve();
         })
 
-        .add('autobind class', a.lol)
-        .add('simple class', b.lol)
-        .add('arrow func', c.lol)
-        .add('autobind method', d.lol)
-        .add('bind in constructor', e.lol)
+        .add('autobind class', () => {
+            var a = new A();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+        })
+        .add('simple class', () => {
+            var a = new B();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+        })
+        .add('simple class 2', () => {
+            var a = new B();
+            var b = a.lol.bind(a);
+            b();
+            b();
+            b();
+            b();
+            b();
+            b();
+            b();
+            b();
+            b();
+            b();
+        })
+        .add('simple class 3', () => {
+            var a = new B();
+            a.lol.bind(a)();
+            a.lol.bind(a)();
+            a.lol.bind(a)();
+            a.lol.bind(a)();
+            a.lol.bind(a)();
+            a.lol.bind(a)();
+            a.lol.bind(a)();
+            a.lol.bind(a)();
+            a.lol.bind(a)();
+            a.lol.bind(a)();
+        })
+        .add('simple class 4', () => {
+            var a = new B();
+            (() => a.lol())();
+            (() => a.lol())();
+            (() => a.lol())();
+            (() => a.lol())();
+            (() => a.lol())();
+            (() => a.lol())();
+            (() => a.lol())();
+            (() => a.lol())();
+            (() => a.lol())();
+            (() => a.lol())();
+        })
+        .add('simple class 5', () => {
+            var a = new B();
+
+            var newVar = () => a.lol();
+            (newVar)();
+            (newVar)();
+            (newVar)();
+            (newVar)();
+            (newVar)();
+            (newVar)();
+            (newVar)();
+            (newVar)();
+            (newVar)();
+            (newVar)();
+        })
+        .add('arrow func', () => {
+            var a = new C();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+        })
+        .add('autobind method', () => {
+            var a = new D();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+        })
+        .add('bind in constructor', () => {
+            var a = new E();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+            a.lol();
+        })
         .add('RegExp#test', () => /o/.test('Hello World!'))
         .add('String#indexOf', () => 'Hello World!'.indexOf('o') > -1)
 
@@ -115,6 +232,6 @@ async function test2() {
 }
 
 (async function() {
-    await test1();
+    //await test1();
     await test2();
 })();
